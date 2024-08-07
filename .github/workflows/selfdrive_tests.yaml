@@ -292,14 +292,14 @@ jobs:
       - uses: ./.github/workflows/setup-with-retry
       - name: Get base car info
         run: |
-          mkdir -p /tmp/openpilot_cache/base_car_docs/
-          wget -O /tmp/openpilot_cache/base_car_docs/CARS.md https://raw.githubusercontent.com/commaai/openpilot/f6afb09924bf5db88f7d1e8caa0e17410a3fa537/docs/CARS.md
+          ${{ env.RUN }} "mkdir -p /tmp/openpilot_cache/base_car_docs/"
+          ${{ env.RUN }} "wget -O /tmp/openpilot_cache/base_car_docs/CARS.md https://raw.githubusercontent.com/commaai/openpilot/f6afb09924bf5db88f7d1e8caa0e17410a3fa537/docs/CARS.md"
           sudo chown -R $USER:$USER ${{ github.workspace }}
       - name: Save car docs diff
         id: save_diff
         run: |
-          scons -j$(nproc)
-          output=$(python selfdrive/debug/print_docs_diff.py --path /tmp/openpilot_cache/base_car_docs)
+          ${{ env.RUN }} "scons -j$(nproc)"
+          output=$(${{ env.RUN }} "python selfdrive/debug/print_docs_diff.py --path /tmp/openpilot_cache/base_car_docs")
           echo "${output}"
           output="${output//$'\n'/'%0A'}"
           echo "::set-output name=diff::$output"
