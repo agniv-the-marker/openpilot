@@ -33,18 +33,25 @@ def process_detail_sentence(old, new):
             f"  + {cur_sentence[1]}\n" + \
             "  ```"
 
-def column_change_format(line1, line2):
+def format_line(line1, line2=None):
+  """
+  Formats the line to show the changes between the two lines.
+  If line2 is not provided, it is assumed to be the same as line1.
+  This lets us format line1 on its own and handle the stars/video icons.
+  """
+  if not line2:
+    line2 = line1
   line1, line2 = line1[3:], line2[3:]
   info1, info2 = line1.split('|'), line2.split('|')
   row = "|"
   for i1, i2 in zip(info1, info2, strict=True):
-    if "![star]" in i1 and "![star]" in i2: # Handle the star icons
+    if '![star](assets/icon-star-' in i1 + i2: # Handle the star icons
       for star_type in Star:
         if star_type.value in i1:
-          i1 = i1.replace(star_type.value, STAR_ICON.format(star_type.value))
+          i1 = STAR_ICON.format(star_type.value)
         if star_type.value in i2:
-          i2 = i2.replace(star_type.value, STAR_ICON.format(star_type.value))
-    if i1 == info1[-1] and i2 == info2[-1]: # Handle the video icons
+          i2 = STAR_ICON.format(star_type.value)
+    if 'icon-youtube.svg' in i1 + i2: # Handle the video icons
       if i1:
         link = i1[i1.index('href="')+6:i1.index('" target')]
         i1 = VIDEO_ICON.format(link)
@@ -76,7 +83,7 @@ def process_diff_information(info):
     for make in makes:
       if make in remove and make in add:
         categories.append('column')
-        final_strings.append(column_change_format(remove[make], add[make]))
+        final_strings.append(format_line(remove[make], add[make]))
         diff_detail_sentence = process_detail_sentence(remove[make], add[make])
         if diff_detail_sentence:
           categories.append('detail')
@@ -85,17 +92,16 @@ def process_diff_information(info):
         del remove[make]
       elif make in remove:
         categories.append('removals')
-        final_strings.append(remove[make][2:])
+        final_strings.append(format_line(remove[make]))
         del remove[make]
       elif make in add:
         categories.append('additions')
-        final_strings.append(add[make][2:])
+        final_strings.append(format_line(add[make]))
         del add[make]
     output = list(zip(categories, final_strings, strict=True))
   else:
     category = "additions" if "a" in header else "removals"
-    final_strings = [x[2:] for x in info[1:]]
-    output = [(category, string) for string in final_strings]
+    output = [(category, format_line(line)) for line in info[1:]]
   return output
 
 def print_markdown(changes):
