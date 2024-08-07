@@ -292,7 +292,7 @@ jobs:
       - name: Get base car info
         run: |
           mkdir -p /tmp/openpilot_cache/base_car_docs/
-          wget -O /tmp/openpilot_cache/base_car_docs/CARS.md https://raw.githubusercontent.com/commaai/openpilot/master/docs/CARS.md
+          wget -O /tmp/openpilot_cache/base_car_docs/CARS.md https://raw.githubusercontent.com/commaai/openpilot/f6afb09924bf5db88f7d1e8caa0e17410a3fa537/docs/CARS.md
           sudo chown -R $USER:$USER ${{ github.workspace }}
       - uses: actions/checkout@v4
         with:
