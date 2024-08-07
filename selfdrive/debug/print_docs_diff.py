@@ -112,5 +112,6 @@ def print_car_docs_diff(path):
 if __name__ == "__main__":
   parser = argparse.ArgumentParser()
   parser.add_argument("--path", required=True)
+  print("testing")
   args = parser.parse_args()
   print_car_docs_diff(args.path)
