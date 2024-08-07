@@ -291,7 +291,7 @@ jobs:
       - name: Get base car info
         run: |
           ${{ env.RUN }} "mkdir -p /tmp/openpilot_cache/base_car_docs/"
-          ${{ env.RUN }} "wget -O /tmp/openpilot_cache/base_car_docs/CARS.md https://raw.githubusercontent.com/commaai/openpilot/76f7b2793d5a32eb4577a2fc579a56ce41209738/docs/CARS.md"
+          ${{ env.RUN }} "wget -O /tmp/openpilot_cache/base_car_docs/CARS.md https://raw.githubusercontent.com/commaai/openpilot/36d5bb7ecc8288dfb52f624b7d4ba3070d0ae683/docs/CARS.md"
           sudo chown -R $USER:$USER ${{ github.workspace }}
       - name: Save car docs diff
         id: save_diff
