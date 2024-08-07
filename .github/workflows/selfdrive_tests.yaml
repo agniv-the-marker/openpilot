@@ -288,23 +288,20 @@ jobs:
         with:
           submodules: true
           ref: ${{ github.event.pull_request.base.ref }}
+          path: current
       - uses: ./.github/workflows/setup-with-retry
       - name: Get base car info
         run: |
           mkdir -p /tmp/openpilot_cache/base_car_docs/
           wget -O /tmp/openpilot_cache/base_car_docs/CARS.md https://raw.githubusercontent.com/commaai/openpilot/f6afb09924bf5db88f7d1e8caa0e17410a3fa537/docs/CARS.md
           sudo chown -R $USER:$USER ${{ github.workspace }}
-      - uses: actions/checkout@v4
-        with:
-          submodules: true
-          path: current
-      - run: cd current && git lfs pull
       - name: Save car docs diff
         id: save_diff
         run: |
           cd current
-          ${{ env.RUN }} "python selfdrive/debug/print_docs_diff.py --path /tmp/openpilot_cache/base_car_docs"
-          output=$(${{ env.RUN }} "python selfdrive/debug/print_docs_diff.py --path /tmp/openpilot_cache/base_car_docs")
+          git lfs pull
+          output=$(python selfdrive/debug/print_docs_diff.py --path /tmp/openpilot_cache/base_car_docs)
+          echo "${output}"
           output="${output//$'\n'/'%0A'}"
           echo "::set-output name=diff::$output"
       - name: Find comment
