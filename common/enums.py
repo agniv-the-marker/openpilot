@@ -14,7 +14,6 @@ class Column(Enum):
 
 
 class Star(Enum):
-  __order__ = "empty half full"
   FULL = "full"
   HALF = "half"
   EMPTY = "empty"
