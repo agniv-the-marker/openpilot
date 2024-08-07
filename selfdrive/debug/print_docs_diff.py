@@ -6,9 +6,14 @@ import subprocess
 
 from openpilot.common.basedir import BASEDIR
 from openpilot.common.conversions import Conversions as CV
-from openpilot.common.enums import Column
+from openpilot.common.enums import Column, Star
 from openpilot.common.detail_sentence import get_detail_sentence
 
+FOOTNOTE_TAG = "<sup>{}</sup>"
+STAR_ICON = '<a href="##"><img valign="top" ' + \
+            'src="https://media.githubusercontent.com/media/commaai/openpilot/master/docs/assets/icon-star-{}.svg" width="22" /></a>'
+VIDEO_ICON = '<a href="{}" target="_blank">' + \
+             '<img height="18px" src="https://media.githubusercontent.com/media/commaai/openpilot/master/docs/assets/icon-youtube.svg"></img></a>'
 COLUMNS = "|" + "|".join([column.value for column in Column]) + "|"
 COLUMN_HEADER = "|---|---|---|{}|".format("|".join([":---:"] * (len(Column) - 3)))
 ARROW_SYMBOL = "➡️"
@@ -31,7 +36,26 @@ def process_detail_sentence(old, new):
 def column_change_format(line1, line2):
   line1, line2 = line1[3:], line2[3:]
   info1, info2 = line1.split('|'), line2.split('|')
-  return "".join([f"{i1} {ARROW_SYMBOL} {i2}|" if i1 != i2 else f"{i1}|" for i1, i2 in zip(info1, info2, strict=True)])
+  row = "|"
+  for i1, i2 in zip(info1, info2, strict=True):
+    if "![star]" in i1 and "![star]" in i2: # Handle the star icons
+      for star_type in Star:
+        if star_type.value in i1:
+          i1 = i1.replace(star_type.value, STAR_ICON.format(star_type.value))
+        if star_type.value in i2:
+          i2 = i2.replace(star_type.value, STAR_ICON.format(star_type.value))
+    if i1 == info1[-1] and i2 == info2[-1]: # Handle the video icons
+      if i1:
+        link = i1[i1.index('href="')+6:i1.index('" target')]
+        i1 = VIDEO_ICON.format(link)
+      if i2:
+        link = i2[i2.index('href="')+6:i2.index('" target')]
+        i2 = VIDEO_ICON.format(link)
+    if i1 != i2:
+      row += f"{i1} {ARROW_SYMBOL} {i2}|"
+    else:
+      row += f"{i1}|"
+  return row
 
 def process_diff_information(info):
   header = info[0]
