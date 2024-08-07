@@ -290,9 +290,8 @@ jobs:
           submodules: true
           lfs: true
           ref: ${{ github.event.pull_request.head.ref }}
-      - name: Build openpilot
-        uses: ./.github/workflows/setup-with-retry
-        run: ${{ env.RUN }} "scons -j$(nproc)"
+      - uses: ./.github/workflows/setup-with-retry
+      - run: ${{ env.RUN }} "scons -j$(nproc)"
       - name: Get base car info
         run: |
           mkdir -p /tmp/openpilot_cache/base_car_docs/
